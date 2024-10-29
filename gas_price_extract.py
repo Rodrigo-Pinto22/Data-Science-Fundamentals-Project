@@ -156,5 +156,5 @@ print(len(list_2)%len(list_dates_2) == 0)
 #list_text = page_text.split()
 #print(list_text)
 
-
+#pequena alteracao 
 f.close()
