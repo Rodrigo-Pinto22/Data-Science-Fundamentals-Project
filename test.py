@@ -31,7 +31,7 @@ for nome, url in urls.items():
 print(lista)
 # Salvando os dados em formato JSON
 with open("dados_combustiveis.json", "w") as arquivo_json:
-    json.dump(lista, arquivo_json, indent=4)
+    json.dump(lista  , arquivo_json, indent=4)
 
 print("Dados salvos em 'dados_combustiveis.json'")
 
