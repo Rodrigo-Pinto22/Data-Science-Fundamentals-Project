@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import re
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
@@ -30,7 +31,7 @@ def numeric(f_doc):
     return price
 
 def fuel(g, fuel_text):
-    lista_debug_1, lista_debug_2, lista_debug_2_a, lista_debug_3, lista_debug_4, lista_debug_5 =[], [], [], [], [], []
+    lista_debug_1, lista_debug_2, lista_debug_2_, lista_debug_2_a, lista_debug_2_aa, lista_debug_3, lista_debug_4, lista_debug_5 =[], [], [], [], [], [], [], []
     i_1 =  i_2 =  i_3 = 0
     if g == 1:
         for word in fuel_text:
@@ -45,22 +46,34 @@ def fuel(g, fuel_text):
             if  word == "95":
                 word_n= fuel_text[i_2+1]
                 lista_debug_2.append(word_n)
-        return  lista_debug_2
+                lista_debug_2_ = numeric(lista_debug_2)
+                for i in range(len(lista_debug_2_)):
+                    lista_debug_2_[i] = float(lista_debug_2_[i])
+                av = round(np.mean(lista_debug_2_),3)
+                lista_debug_2_.clear()
+                lista_debug_2_.append(av)
+                
+        return  lista_debug_2_
     elif g == 3:
         for word in fuel_text:
             i_3+=1
-            if  word == "Repsol" and fuel_text[i_3-1] == '/':
+            if  word == "Repsol" :#and fuel_text[i_3-1] == "/":
                 word_1= fuel_text[i_3]
-                print(word_1)
                 word_2 = fuel_text[i_3+5]
-                print(word_2)
                 word_3 = fuel_text[i_3+10]
                 i_3 = 0
-                print(word_3)
+
                 lista_debug_2_a.append(word_1)
                 lista_debug_2_a.append(word_2)
                 lista_debug_2_a.append(word_3)
-        return  lista_debug_2_a
+
+                lista_debug_2_aa = numeric(lista_debug_2_a)
+                for i in range(len(lista_debug_2_aa)):
+                    lista_debug_2_aa[i] = float(lista_debug_2_aa[i])
+                av = round(np.mean(lista_debug_2_aa),3)
+                lista_debug_2_aa.clear()
+                lista_debug_2_aa.append(av)
+        return  lista_debug_2_aa
 
 a = 0
 for i in range(0,len(df)):
@@ -97,42 +110,56 @@ for i in range(0,len(df)):
                 ###### Definir o índice onde começa e onde termina
                 start_index = str_soup_2.index('Galp')
                 end_index = 78+start_index
-                print(str_soup_2[end_index])
+                #print(link)
+                #print(str_soup_2[end_index])
                 str_soup_2 = str_soup_2[start_index:end_index]
                 # Extrair o subgrupo
                 if str_soup_2[-1].endswith("operar"):       
                     filtered_2 = remove_words(str_soup_2)
+                    #print(filtered_2)
                     fuel_soup_2 = fuel(g, filtered_2)
-                    num_soup_gasolina_2 = numeric(fuel_soup_2)
-                    list_2.extend(num_soup_gasolina_2)
+                    #print(fuel_soup_2)
+                    #num_soup_gasolina_2 = numeric(fuel_soup_2)
+                    list_2.extend(fuel_soup_2)
                     list_dates_2.append(date)
+                    
                 else:                 
                     g = 3
                     filtered_2a = remove_words(str_soup_2)
+                    #print(filtered_2a)
                     fuel_soup_2a = fuel(g, filtered_2a)
-                    num_soup_gasolina_2a = numeric(fuel_soup_2a)
-                    list_2.extend(num_soup_gasolina_2a)
+                    #print(fuel_soup_2a)
+                    #num_soup_gasolina_2a = numeric(fuel_soup_2a)
+                    list_2.extend(fuel_soup_2a)
                     list_dates_2.append(date)
+                    
             else:          
                 if str_soup.__contains__('Os mais baratos'):
                     #print(i)   
                     #print(str_soup)
                     #print()
-                    #print("------------------------------------------------------------------------------------------------")
-                    str_soup = str_soup.split()
-                    filtered = remove_words(str_soup)
-                    list_3.extend(filtered)
+                    print("------------------------------------------3----------------------------------------------------- \n")
+                    print(link)
+                    str_soup_3 = str_soup.split()
+                    print(str_soup_3)
+                    #filtered = remove_words(str_soup)
+                    #list_3.extend(filtered)
     else:
         
         if str_soup.__contains__('Gasóleo colorido') or str_soup.__contains__('Gasóleo especial') or str_soup.__contains__('Gasóleo simples') or str_soup.__contains__('Gasolina especial 98') or str_soup.__contains__('Gasolina simples 95'):
-            
-            str_soup = str_soup.split()
-            filtered = remove_words(str_soup)
+            print("------------------------------------------4----------------------------------------------------- \n")
+            print(link)
+            str_soup_4 = str_soup.split()
+            print(str_soup_4)
+            #filtered = remove_words(str_soup)
             #list_4.extend(filtered)
         else:
-            str_soup = str_soup.split()
-            filtered = remove_words(str_soup)
-            list_5.extend(filtered)
+            print("------------------------------------------5----------------------------------------------------- \n")
+            print(link)
+            str_soup_5 = str_soup.split()
+            print(str_soup_5)
+            #filtered = remove_words(str_soup)
+            #list_5.extend(filtered)
 
 
 
