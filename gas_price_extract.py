@@ -31,8 +31,8 @@ def numeric(f_doc):
     return price
 
 def fuel(g, fuel_text):
-    lista_debug_1, lista_debug_2, lista_debug_2_, lista_debug_2_a, lista_debug_2_aa, lista_debug_3, lista_debug_4, lista_debug_5 =[], [], [], [], [], [], [], []
-    i_1 =  i_2 =  i_3 = 0
+    lista_debug_1, lista_debug_2, lista_debug_2_, lista_debug_2_a, lista_debug_2_aa, lista_debug_3, lista_debug_4, lista_debug_4_date, lista_debug_5 =[], [], [], [], [], [], [], [], []
+    i_1 =  i_2 =  i_3 = i_4 = 0
     if g == 1:
         for word in fuel_text:
             i_1+=1
@@ -74,6 +74,17 @@ def fuel(g, fuel_text):
                 lista_debug_2_aa.clear()
                 lista_debug_2_aa.append(av)
         return  lista_debug_2_aa
+    elif g==4:
+        for word in fuel_text:
+            i_4+=1
+            if word.lower() == "gasolina" and fuel_text[i_4].lower() == "especial" and fuel_text[i_4+1] == "95":
+                word_4 = fuel_text[i_4+2]
+                word_4_date = fuel_text[i_4+3]
+                lista_debug_4.append(word_4)
+                lista_debug_4 = numeric(lista_debug_4)
+                lista_debug_4_date.append(word_4_date)
+        return lista_debug_4, lista_debug_4_date
+
 
 a = 0
 for i in range(0,len(df)):
@@ -139,20 +150,25 @@ for i in range(0,len(df)):
                     #print(str_soup)
                     #print()
                     print("------------------------------------------3----------------------------------------------------- \n")
-                    print(link)
+                    #print(link)
                     str_soup_3 = str_soup.split()
-                    print(str_soup_3)
+                    #print(str_soup_3)
                     #filtered = remove_words(str_soup)
                     #list_3.extend(filtered)
     else:
         
         if str_soup.__contains__('Gasóleo colorido') or str_soup.__contains__('Gasóleo especial') or str_soup.__contains__('Gasóleo simples') or str_soup.__contains__('Gasolina especial 98') or str_soup.__contains__('Gasolina simples 95'):
             print("------------------------------------------4----------------------------------------------------- \n")
-            print(link)
+            #print(link)
             str_soup_4 = str_soup.split()
-            print(str_soup_4)
-            #filtered = remove_words(str_soup)
-            #list_4.extend(filtered)
+            g = 4
+            filtered_4 = remove_words(str_soup_4)
+            start_index_4 = filtered_4.index('Última')
+            end_index_4 = start_index + 50
+            filtered_4 = filtered_4[start_index_4:end_index_4]
+            fuel_soup_4, fuel_soup_4_date= fuel(g, filtered_4)
+            list_4.extend(fuel_soup_4)
+            list_dates_4.extend(fuel_soup_4_date)
         else:
             print("------------------------------------------5----------------------------------------------------- \n")
             print(link)
@@ -173,7 +189,37 @@ print(len(list_dates_2))
 print(len(list_2)%len(list_dates_2) == 0)
 #print(f"lista 2 :{soup}\n")
 #print(f"lista 3 :{list_3}\n")
-#print(f"lista 4 :{len(list_4)}\n")
+
+
+list_comp = list_dates_4[:]
+list_comp_price = list_4[:]
+seen_price = set()
+seen_date = set()
+d = p = 0
+
+for price, date in zip(list_4, list_dates_4):
+    if date in seen_date and price in seen_price:
+        list_comp.remove(date)
+        list_comp_price.remove(price)
+
+    elif date in seen_date and price not in seen_price:
+        pass
+
+    elif date not in seen_date and price in seen_price:
+        pass
+
+    else:
+        seen_date.add(date)
+        seen_price.add(price)
+
+list_dates_4 = list_comp
+list_4 = list_comp_price
+
+print(f"lista 4 :{list_4}\n")
+print(f"lista 4 :{list_dates_4}\n")
+print(len(list_4)%len(list_dates_4) == 0)
+
+
 #print(f"lista 5 :{len(list_5)}")
 
 #print(gasoleo)
