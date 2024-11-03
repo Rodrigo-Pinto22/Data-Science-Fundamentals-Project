@@ -158,8 +158,6 @@ for i in range(0,len(df)):
     else:
         
         if str_soup.__contains__('Gasóleo colorido') or str_soup.__contains__('Gasóleo especial') or str_soup.__contains__('Gasóleo simples') or str_soup.__contains__('Gasolina especial 98') or str_soup.__contains__('Gasolina simples 95'):
-            print("------------------------------------------4----------------------------------------------------- \n")
-            #print(link)
             str_soup_4 = str_soup.split()
             g = 4
             filtered_4 = remove_words(str_soup_4)
@@ -183,9 +181,7 @@ print(a)
 print(list_dates_1)
 print(f"lista 1 :{list_1}\n")
 print(f"lista 2 :{list_2}\n")
-print(len(list_2))
 print(list_dates_2)
-print(len(list_dates_2))
 print(len(list_2)%len(list_dates_2) == 0)
 #print(f"lista 2 :{soup}\n")
 #print(f"lista 3 :{list_3}\n")
