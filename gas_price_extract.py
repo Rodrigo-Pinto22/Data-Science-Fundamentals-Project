@@ -13,9 +13,9 @@ with open("C:\\Users\\ASUS\\Documents\\GitHub\\tutorial\\web_search_1", 'r') as 
     df = pd.read_csv(f, delimiter= ',')
 
 
-list_1,list_2, list_3, list_4, list_5 = [], [], [], [], []
+list_1,list_2, list_3, list_4, list_5, final_list = [], [], [], [], [], []
 
-list_dates_1,list_dates_2,list_dates_3,list_dates_4,list_dates_5 = [], [], [], [], []
+list_dates_1,list_dates_2,list_dates_3,list_dates_4,list_dates_5, final_list_dates = [], [], [], [], [], []
 
 
 def remove_words(doc):
@@ -31,15 +31,21 @@ def numeric(f_doc):
     return price
 
 def fuel(g, fuel_text):
-    lista_debug_1, lista_debug_2, lista_debug_2_, lista_debug_2_a, lista_debug_2_aa, lista_debug_3, lista_debug_4, lista_debug_4_date, lista_debug_5 =[], [], [], [], [], [], [], [], []
-    i_1 =  i_2 =  i_3 = i_4 = 0
+    lista_debug_1, lista_debug_1_, lista_debug_2, lista_debug_2_, lista_debug_2_a, lista_debug_2_aa, lista_debug_3, lista_debug_4, lista_debug_4_date, lista_debug_5, lista_debug_5_date = [], [], [], [], [], [], [], [], [], [], []
+    i_1 =  i_2 =  i_3 = i_4 = i_5 = 0
     if g == 1:
         for word in fuel_text:
             i_1+=1
             if  word.lower() == "gasolina":
                 word_n= fuel_text[i_1]
                 lista_debug_1.append(word_n)
-        return lista_debug_1
+                lista_debug_1_ = numeric(lista_debug_1)
+                for i in range(len(lista_debug_1_)):
+                    lista_debug_1_[i] = float(lista_debug_1_[i])
+                av = round(np.mean(lista_debug_1_),3)
+                lista_debug_1_.clear()
+                lista_debug_1_.append(av)
+        return lista_debug_1_
     elif g ==2 :
         for word in fuel_text:
             i_2+=1
@@ -84,6 +90,16 @@ def fuel(g, fuel_text):
                 lista_debug_4 = numeric(lista_debug_4)
                 lista_debug_4_date.append(word_4_date)
         return lista_debug_4, lista_debug_4_date
+    elif g==5:
+        for word in fuel_text:
+            i_5+=1
+            if word.lower()=="gasolina" and fuel_text[i_5]=="95":
+                word_5 = fuel_text[i_5+1]
+                word_5_date = fuel_text[i_5+2]
+                lista_debug_5.append(word_5)
+                lista_debug_5 = numeric(lista_debug_5)
+                lista_debug_5_date.append(word_5_date)
+        return lista_debug_5, lista_debug_5_date
 
 
 a = 0
@@ -109,8 +125,7 @@ for i in range(0,len(df)):
                 str_soup_1 = str_soup.split()               #Passar para lista, retirando os espaço entre palavras
                 filtered_1 = remove_words(str_soup_1)       #Remover stopwords   
                 fuel_soup_1 = fuel(g,filtered_1)            #Extrair possiveis preços
-                num_soup_gasolina_1 = numeric(fuel_soup_1)  #Extrair preços
-                list_1.extend(num_soup_gasolina_1)          #Guardar preços
+                list_1.extend(fuel_soup_1)                  #Guardar preços
                 list_dates_1.append(date)                   #Guardar respectiva data do ficheiro 
                 
 
@@ -169,11 +184,16 @@ for i in range(0,len(df)):
             list_dates_4.extend(fuel_soup_4_date)
         else:
             print("------------------------------------------5----------------------------------------------------- \n")
-            print(link)
             str_soup_5 = str_soup.split()
-            print(str_soup_5)
-            #filtered = remove_words(str_soup)
-            #list_5.extend(filtered)
+            g = 5
+            filtered_5 = remove_words(str_soup_5)
+            start_index_5 = filtered_5.index('Última')
+            end_index_5 = start_index_5 + 50
+            filtered_5 = filtered_5[start_index_5:end_index_5]
+            fuel_soup_5, fuel_soup_5_date = fuel(g, filtered_5)
+            list_5.extend(fuel_soup_5)
+            list_dates_5.extend(fuel_soup_5_date)
+            
 
 
 
@@ -215,15 +235,29 @@ print(f"lista 4 :{list_4}\n")
 print(f"lista 4 :{list_dates_4}\n")
 print(len(list_4)%len(list_dates_4) == 0)
 
+print(f"lista 5 :{list_5}\n")
+print(f"lista 5 :{list_dates_5}\n")
+print(len(list_5)%len(list_dates_5) == 0)
 
-#print(f"lista 5 :{len(list_5)}")
+for n in range(1,6):
+    final_list.extend(eval(f"list_{n}"))
+    final_list_dates.extend(eval(f"list_dates_{n}"))
+print(f"Final list: \n", final_list)
+print(f"\nFinal list for dates: \n", final_list_dates) 
+print(f"Verification: ", len(final_list)%len(final_list_dates)==0 )
 
-#print(gasoleo)
-#print(gasolina)
+ziped = list(zip(final_list_dates, final_list))
+ziped.sort()
+final_list_dates, final_list = zip(*ziped)
+final_list_dates = list(final_list_dates)
+final_list = list(final_list)
 
-#age_text = soup.get_text(" ", strip=True)
-#list_text = page_text.split()
-#print(list_text)
+dict_price = {'Price': final_list, 
+              'Date': final_list_dates}
+
+print(dict_price)
+
+"""Fazer depois um gráfico com os dados que tenho"""
 
 #pequena alteracao 
 f.close()
