@@ -6,6 +6,10 @@ from urllib.request import urlopen
 import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+
 stop_words = set(stopwords.words('portuguese'))
 
 
@@ -131,7 +135,6 @@ for i in range(0,len(df)):
 
             elif str_soup.__contains__("Comparador Galp / BP / Repsol"):
                 str_soup_2 = str_soup.split()               
-                a+=1
                 g = 2            
                 ###### Definir o índice onde começa e onde termina
                 start_index = str_soup_2.index('Galp')
@@ -149,6 +152,7 @@ for i in range(0,len(df)):
                     list_2.extend(fuel_soup_2)
                     list_dates_2.append(date)
                     
+                    
                 else:                 
                     g = 3
                     filtered_2a = remove_words(str_soup_2)
@@ -158,13 +162,15 @@ for i in range(0,len(df)):
                     #num_soup_gasolina_2a = numeric(fuel_soup_2a)
                     list_2.extend(fuel_soup_2a)
                     list_dates_2.append(date)
+                    if date == '2013-09-03':
+                        print("Aqui")
                     
             else:          
                 if str_soup.__contains__('Os mais baratos'):
                     #print(i)   
                     #print(str_soup)
                     #print()
-                    print("------------------------------------------3----------------------------------------------------- \n")
+                    #print("------------------------------------------3----------------------------------------------------- \n")
                     #print(link)
                     str_soup_3 = str_soup.split()
                     #print(str_soup_3)
@@ -183,7 +189,6 @@ for i in range(0,len(df)):
             list_4.extend(fuel_soup_4)
             list_dates_4.extend(fuel_soup_4_date)
         else:
-            print("------------------------------------------5----------------------------------------------------- \n")
             str_soup_5 = str_soup.split()
             g = 5
             filtered_5 = remove_words(str_soup_5)
@@ -197,7 +202,6 @@ for i in range(0,len(df)):
 
 
 
-print(a)
 print(list_dates_1)
 print(f"lista 1 :{list_1}\n")
 print(f"lista 2 :{list_2}\n")
@@ -231,9 +235,19 @@ for price, date in zip(list_4, list_dates_4):
 list_dates_4 = list_comp
 list_4 = list_comp_price
 
+for i in range(len(list_4)):
+    word = list_4[i]
+    word = word.replace(",",".")
+    list_4[i] = float(word)
+    
 print(f"lista 4 :{list_4}\n")
 print(f"lista 4 :{list_dates_4}\n")
 print(len(list_4)%len(list_dates_4) == 0)
+
+for i in range(len(list_5)):
+    word = list_5[i]
+    word = word.replace(",",".")
+    list_5[i] = float(word)
 
 print(f"lista 5 :{list_5}\n")
 print(f"lista 5 :{list_dates_5}\n")
@@ -242,6 +256,7 @@ print(len(list_5)%len(list_dates_5) == 0)
 for n in range(1,6):
     final_list.extend(eval(f"list_{n}"))
     final_list_dates.extend(eval(f"list_dates_{n}"))
+
 print(f"Final list: \n", final_list)
 print(f"\nFinal list for dates: \n", final_list_dates) 
 print(f"Verification: ", len(final_list)%len(final_list_dates)==0 )
@@ -256,6 +271,20 @@ dict_price = {'Price': final_list,
               'Date': final_list_dates}
 
 print(dict_price)
+
+# Converter as datas de string para objetos datetime
+update_final_lst_date = [datetime.strptime(data, '%Y-%m-%d') for data in final_list_dates]
+
+# Plotar o gráfico
+"""plt.figure(figsize=(10, 5))
+plt.plot(update_final_lst_date, final_list, marker='o', color='b', linestyle='-')
+plt.title('Evolução do Preço ao Longo do Tempo')
+plt.xlabel('Data')
+plt.ylabel('Preço')
+plt.grid(True)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()"""
 
 """Fazer depois um gráfico com os dados que tenho"""
 

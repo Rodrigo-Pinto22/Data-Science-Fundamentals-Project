@@ -48,14 +48,14 @@ def main():
     date_rearrange = []
     for topic in topics:
         print(f"Topic: {topic}\n")
-
+                #https://arquivo.pt/url/search?q=maisgasolina.com&l=pt&from=19910806&to=20241106&trackingId=eca23903afbedfe2a2a7_54fd2c45a8ef017253d0&adv_and=maisgasolina.com
         url = f"https://arquivo.pt/textsearch?q={topic}&maxItems={items}&prettyPrint=true&from={begin}&to={last}"
         r = requests.get(url)
 
         if r.status_code == 200:
             print("Success!")
             data = r.json()
-            #print(data)
+            print(data)
             for dates in data['response_items']:
                 title = dates['title']
                 if len(title) != 0 and not title.__contains__("301 Moved Permanently") and (title.__contains__('Mais Gasolina') or title.__contains__('Compare o Mercado')):                                                                       
@@ -82,11 +82,11 @@ def main():
     #print(dict_search)
     #print(len(title_list), len(url_link_to_extract), len(final_date_list))
     dt_search = pd.DataFrame(data = dict_search)
-    dt_search.to_csv('web_search_1', index=False)
+    dt_search.to_csv('web_search_2', index=False)
     #print(final_date_list)
     #print(dt_search.to_string())
 
     #Calling another script
-
+    print(len(title_list))
 if __name__ == '__main__' :
      main()
