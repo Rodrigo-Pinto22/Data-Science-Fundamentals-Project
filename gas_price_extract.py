@@ -296,18 +296,21 @@ df_oil_price['Date'] = df_oil_price['Date'].apply(lambda x : parse_date(x))
 
 print(df_oil_price)
 
-list_oil_dates = []
+list_oil_dates, list_oil_dates1 = [], []
 list_index = []
-index = 0
+index_n = 0
+dict_oil_date = {}
 
-for date in df_oil_price['Date']:
+for index, date in enumerate(df_oil_price['Date']):
     if date.year >= 2008:
         #for date_gas in update_final_lst_date:
            #if 
         date = str(date)
         list_oil_dates.append(date)
         list_index.append(index)
-    index +=1
+        dict_oil_date[date]  = index
+    
+
 
 for date in list_oil_dates:
     dates1 = date.split()
@@ -315,18 +318,41 @@ for date in list_oil_dates:
     dates3 = dates2.split()
     dates4 = dates3[:10]
     dates5 = ''.join(dates4)
-    #print(dates5)
-    lista_datas_oil = [datas for datas in final_list_dates if datas == dates5]
-#for data in final_list_dates:
- #   print(data)
-#print(list_oil_dates)
-print(lista_datas_oil)
-#print(list_index)
+    list_oil_dates1.append(dates5)
+    dict_oil_date[dates5] = dict_oil_date.pop(date)
+    
 
+
+
+lista_datas_oil = [date for date in list_oil_dates1 if date in final_list_dates]
+    
+lista_date_to_remove = [date for date in dict_oil_date.keys() if date not in lista_datas_oil]
+
+for item in lista_date_to_remove:
+    dict_oil_date.pop(item)
+
+
+
+list_price_oil = []
+
+for i in dict_oil_date.values():
+    list_price_oil.append(df_oil_price.iloc[i]['Price']) 
+
+print(list_price_oil)
+
+#for p in range(len(df_oil_price['Price'])):
+#    if p in list_index:
+#        list_price_oil.append(df_oil_price.at[p, 'Price'])
+
+print(len(list_price_oil))
+print(len(update_final_lst_date))
+print(len(final_list))
+print(dict_oil_date)
 
 # Plotar o gráfico
 """plt.figure(figsize=(10, 5))
-plt.plot(update_final_lst_date, final_list, marker='o', color='b', linestyle='-')
+plt.plot(update_final_lst_date, final_list, marker='o', color='b', linestyle='-', label = "Gasolina")
+plt.plot(update_final_lst_date, list_price_oil, marker='x', color='r', linestyle='--', label="Petróleo")
 plt.title('Evolução do Preço ao Longo do Tempo')
 plt.xlabel('Data')
 plt.ylabel('Preço')
