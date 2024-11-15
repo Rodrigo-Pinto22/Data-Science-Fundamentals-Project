@@ -163,7 +163,7 @@ for i in range(0,len(df)):
                     list_2.extend(fuel_soup_2a)
                     list_dates_2.append(date)
                     if date == '2013-09-03':
-                        print("Aqui")
+                        print("##############")
                     
             else:          
                 if str_soup.__contains__('Os mais baratos'):
@@ -275,6 +275,55 @@ print(dict_price)
 # Converter as datas de string para objetos datetime
 update_final_lst_date = [datetime.strptime(data, '%Y-%m-%d') for data in final_list_dates]
 
+#Abrir Valores BrentOilPrices
+
+with open("C:\\Users\\ASUS\\Documents\\GitHub\\Data-Science-Fundamentals-Project\\flat-ui__data-Fri Nov 15 2024.csv", 'r') as brentpricefile:
+    df_oil_price = pd.read_csv(brentpricefile, delimiter= ',')
+
+#df_oil_price['Date'] = pd.to_datetime(df_oil_price['Date'], format='%d-%b-%y')
+print(df_oil_price.head())
+
+def parse_date(date):
+    try:
+        return datetime.strptime(date, '%Y-%m-%d' )
+    except ValueError:
+        return None
+    #except ValueError:
+     #   return None
+    
+df_oil_price['Date'] = df_oil_price['Date'].apply(lambda x : parse_date(x))
+
+
+print(df_oil_price)
+
+list_oil_dates = []
+list_index = []
+index = 0
+
+for date in df_oil_price['Date']:
+    if date.year >= 2008:
+        #for date_gas in update_final_lst_date:
+           #if 
+        date = str(date)
+        list_oil_dates.append(date)
+        list_index.append(index)
+    index +=1
+
+for date in list_oil_dates:
+    dates1 = date.split()
+    dates2 = dates1[0]
+    dates3 = dates2.split()
+    dates4 = dates3[:10]
+    dates5 = ''.join(dates4)
+    #print(dates5)
+    lista_datas_oil = [datas for datas in final_list_dates if datas == dates5]
+#for data in final_list_dates:
+ #   print(data)
+#print(list_oil_dates)
+print(lista_datas_oil)
+#print(list_index)
+
+
 # Plotar o gráfico
 """plt.figure(figsize=(10, 5))
 plt.plot(update_final_lst_date, final_list, marker='o', color='b', linestyle='-')
@@ -286,7 +335,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()"""
 
-"""Fazer depois um gráfico com os dados que tenho"""
+
 
 #pequena alteracao 
 f.close()
