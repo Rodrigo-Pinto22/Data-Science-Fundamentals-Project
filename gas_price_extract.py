@@ -280,57 +280,103 @@ update_final_lst_date = [datetime.strptime(data, '%Y-%m-%d') for data in final_l
 with open("C:\\Users\\ASUS\\Documents\\GitHub\\Data-Science-Fundamentals-Project\\flat-ui__data-Fri Nov 15 2024.csv", 'r') as brentpricefile:
     df_oil_price = pd.read_csv(brentpricefile, delimiter= ',')
 
+with open("C:\\Users\\ASUS\\Documents\\GitHub\\Data-Science-Fundamentals-Project\\BrentOilPrices.csv", 'r') as brentpricefile_1:
+    df_oil_price_1 = pd.read_csv(brentpricefile_1, delimiter= ',')
+
 #df_oil_price['Date'] = pd.to_datetime(df_oil_price['Date'], format='%d-%b-%y')
+
 print(df_oil_price.head())
 
 def parse_date(date):
     try:
         return datetime.strptime(date, '%Y-%m-%d' )
     except ValueError:
-        return None
+        try:
+            return datetime.strptime(date, '%d-%b-%y' )
+        except:
+            return None
     #except ValueError:
      #   return None
     
+#Extracting oil prices
+
 df_oil_price['Date'] = df_oil_price['Date'].apply(lambda x : parse_date(x))
+df_oil_price_1['Date'] = df_oil_price_1['Date'].apply(lambda x : parse_date(x))
 
 
-print(df_oil_price)
+print(df_oil_price_1.head())
 
-list_oil_dates, list_oil_dates1 = [], []
-list_index = []
+
+list_oil_dates, list_oil_dates1, list_oil_dates_a, list_oil_dates_a1 = [], [], [], []
+list_index, list_indexa = [], []
 index_n = 0
-dict_oil_date = {}
+dict_oil_date, dict_oil_date_a = {}, {}
+dict_oil_date_1, dict_oil_date_a_1 = {}, {}
+dict_oil_date_2, dict_oil_date_a_2 = {}, {}
 
-for index, date in enumerate(df_oil_price['Date']):
-    if date.year >= 2008:
-        #for date_gas in update_final_lst_date:
-           #if 
-        date = str(date)
-        list_oil_dates.append(date)
-        list_index.append(index)
-        dict_oil_date[date]  = index
-    
+def extraction(dataframe):
+    dictionary = {}
+    list_oil_date, list_index_e = [], []
+    for index, date in enumerate(dataframe['Date']):
+        if date.year >= 2008:
+            date = str(date)
+            list_oil_date.append(date)
+            list_index_e.append(index)
+            dictionary[date]  = index
+    return list_oil_date, list_index_e, dictionary
 
+def transformation(lista, dictionary):
+    list_oil = []
+    for date in lista:
+        dates1 = date.split()
+        dates2 = dates1[0]
+        dates3 = dates2.split()
+        dates4 = dates3[:10]
+        dates5 = ''.join(dates4)
+        list_oil.append(dates5)
+        dictionary[dates5] = dictionary.pop(date)
+    return list_oil, dictionary
 
-for date in list_oil_dates:
-    dates1 = date.split()
-    dates2 = dates1[0]
-    dates3 = dates2.split()
-    dates4 = dates3[:10]
-    dates5 = ''.join(dates4)
-    list_oil_dates1.append(dates5)
-    dict_oil_date[dates5] = dict_oil_date.pop(date)
-    
+list_oil_dates, list_index, dict_oil_date = extraction(df_oil_price)
+list_oil_dates_a, list_indexa, dict_oil_date_a = extraction(df_oil_price_1)
 
+list_oil_dates1, dict_oil_date_1 = transformation(list_oil_dates, dict_oil_date)
+list_oil_dates_a1, dict_oil_date_a_1 = transformation(list_oil_dates_a, dict_oil_date_a)
 
 
 lista_datas_oil = [date for date in list_oil_dates1 if date in final_list_dates]
+lista_datas_oil_1 = [date for date in list_oil_dates_a1 if date in final_list_dates]
     
-lista_date_to_remove = [date for date in dict_oil_date.keys() if date not in lista_datas_oil]
+lista_date_to_remove = [date for date in dict_oil_date_1.keys() if date not in lista_datas_oil]
+lista_date_to_remove_1 = [date for date in dict_oil_date_a_1.keys() if date not in lista_datas_oil_1]
 
-for item in lista_date_to_remove:
-    dict_oil_date.pop(item)
 
+def remove(lista, dict):
+    for item in lista:
+        dict.pop(item)
+    return dict
+
+dict_oil_date_2 = remove(lista_date_to_remove, dict_oil_date_1)
+dict_oil_date_a_2 = remove(lista_date_to_remove_1, dict_oil_date_a_1)
+
+
+lista_datas_extra = [data for data in dict_oil_date_2.keys() if data not in dict_oil_date_a_2.keys()]
+lista_index_extra = [index for dates, index in dict_oil_date_2.items() if dates not in dict_oil_date_a_2.keys()]
+
+lista_all_dates  =[]
+lista_all_dates.extend(lista_datas_oil)
+lista_all_dates.extend(lista_datas_extra)
+
+## CONSTRUIR UMA LISTA DO PREÇOS DO PETROLEO COM DOS 2 DATAFRAMES.
+## ARRANJAR OUTRO DATAFRAME PARA COMPLEMENTAR DAS 45 DATAS PARA AS 62 -> VOU TER QUE FAZER MÉDIA DOS VALORES ANTES E DEPOIS DA DATA QUE NAO TEM PREÇO
+
+num = 0
+list_not_dates = []
+for element in final_list_dates:
+    if element not in lista_all_dates:
+        list_not_dates.append(element)
+        num+=1
+print(num)
 
 
 list_price_oil = []
@@ -338,19 +384,81 @@ list_price_oil = []
 for i in dict_oil_date.values():
     list_price_oil.append(df_oil_price.iloc[i]['Price']) 
 
-print(list_price_oil)
+
+list_price_oil_1 = [df_oil_price_1.iloc[i]['Price'] for i in lista_index_extra]
+
+list_price_oil.extend(list_price_oil_1)
+
+def zipping(dates, prices):
+    all_dates = []
+    all_prices = []
+    ziped = list(zip(dates, prices))
+    ziped.sort()
+    all_dates, all_prices = zip(*ziped)
+    all_dates = list(all_dates)
+    all_prices = list(all_prices)
+    return all_dates, all_prices
+
+
+
+lista_all_dates, list_price_oil = zipping(lista_all_dates, list_price_oil)
+
+
+
+def addition(not_dates, dates, prices):
+    list_valor_extra = []
+    for date in not_dates:
+        data_anterior = None
+        data_posterior = None
+        for d in dates:
+            if d < date:
+                data_anterior = d
+            elif d > date:
+                data_posterior = d
+                break
+
+        # Obter preços correspondentes
+        preco_anterior = None
+        preco_posterior = None
+        if data_anterior is not None:
+            indice_anterior = dates.index(data_anterior)
+            preco_anterior = prices[indice_anterior]
+        if data_posterior is not None:
+            indice_posterior = dates.index(data_posterior)
+            preco_posterior = prices[indice_posterior]
+
+        # Atribuir valor com base nos dados disponíveis
+        if data_anterior is not None and data_posterior is not None:
+            media = round((preco_anterior + preco_posterior) / 2, 2)
+        elif data_anterior is not None:
+            media = preco_anterior
+        elif data_posterior is not None:
+            media = preco_posterior
+        else:
+            # Se nenhuma data disponível, usar a média global como fallback
+            media = round(sum(prices) / len(prices), 2)
+        list_valor_extra.append(media)
+    return list_valor_extra
+
+list_price_extra = addition(list_not_dates, lista_all_dates, list_price_oil)
+
+lista_all_dates.extend(list_not_dates)
+list_price_oil.extend(list_price_extra)
+
+lista_all_dates, list_price_oil = zipping(lista_all_dates, list_price_oil)
+
+print(len(lista_all_dates))
+print(len(list_price_oil))
 
 #for p in range(len(df_oil_price['Price'])):
 #    if p in list_index:
 #        list_price_oil.append(df_oil_price.at[p, 'Price'])
 
-print(len(list_price_oil))
-print(len(update_final_lst_date))
-print(len(final_list))
-print(dict_oil_date)
 
+
+""""
 # Plotar o gráfico
-"""plt.figure(figsize=(10, 5))
+plt.figure(figsize=(10, 5))
 plt.plot(update_final_lst_date, final_list, marker='o', color='b', linestyle='-', label = "Gasolina")
 plt.plot(update_final_lst_date, list_price_oil, marker='x', color='r', linestyle='--', label="Petróleo")
 plt.title('Evolução do Preço ao Longo do Tempo')
