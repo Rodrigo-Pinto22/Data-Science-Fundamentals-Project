@@ -210,30 +210,31 @@ print(len(list_2)%len(list_dates_2) == 0)
 #print(f"lista 2 :{soup}\n")
 #print(f"lista 3 :{list_3}\n")
 
+def repdates(list_dates, list_prices):
+    list_comp = list_dates[:]
+    list_comp_price = list_prices[:]
+    seen_price = set()
+    seen_date = set()
+    d = p = 0
 
-list_comp = list_dates_4[:]
-list_comp_price = list_4[:]
-seen_price = set()
-seen_date = set()
-d = p = 0
+    for price, date in zip(list_prices, list_dates):
+        if date in seen_date and price in seen_price:
+            list_comp.remove(date)
+            list_comp_price.remove(price)
 
-for price, date in zip(list_4, list_dates_4):
-    if date in seen_date and price in seen_price:
-        list_comp.remove(date)
-        list_comp_price.remove(price)
+        elif date in seen_date and price not in seen_price:
+            list_comp.remove(date)
+            list_comp_price.remove(price)
 
-    elif date in seen_date and price not in seen_price:
-        pass
+        elif date not in seen_date and price in seen_price:
+            pass
 
-    elif date not in seen_date and price in seen_price:
-        pass
+        else:
+            seen_date.add(date)
+            seen_price.add(price)
+    return list_comp, list_comp_price
+list_dates_4, list_4 = repdates(list_dates_4, list_4)
 
-    else:
-        seen_date.add(date)
-        seen_price.add(price)
-
-list_dates_4 = list_comp
-list_4 = list_comp_price
 
 for i in range(len(list_4)):
     word = list_4[i]
@@ -447,29 +448,22 @@ list_price_oil.extend(list_price_extra)
 
 lista_all_dates, list_price_oil = zipping(lista_all_dates, list_price_oil)
 
-print(len(lista_all_dates))
-print(len(list_price_oil))
-
-#for p in range(len(df_oil_price['Price'])):
-#    if p in list_index:
-#        list_price_oil.append(df_oil_price.at[p, 'Price'])
+lista_all_dates, list_price_oil = repdates(lista_all_dates, list_price_oil)
 
 
 
-""""
 # Plotar o gráfico
-plt.figure(figsize=(10, 5))
-plt.plot(update_final_lst_date, final_list, marker='o', color='b', linestyle='-', label = "Gasolina")
-plt.plot(update_final_lst_date, list_price_oil, marker='x', color='r', linestyle='--', label="Petróleo")
-plt.title('Evolução do Preço ao Longo do Tempo')
+fig, (ax1, ax2) = plt.subplots(2)
+fig.suptitle('Evolução do Preço ao Longo do Tempo')
+ax1.set_title('Gasoline')
+ax1.plot(update_final_lst_date, final_list, 'tab:red')
+ax2.set_title('Oil')
+ax2.plot(update_final_lst_date, list_price_oil, 'tab:orange')
 plt.xlabel('Data')
 plt.ylabel('Preço')
-plt.grid(True)
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.show()"""
+plt.show()
 
-
+#TO DO: - TIRAR O VALOR DE 0.79 DO PREÇO DA GASOLINA POIS FICOU O PREÇO DO GPL EM VEZ DA GASOLINA. 
 
 #pequena alteracao 
 f.close()
