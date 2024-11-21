@@ -67,7 +67,7 @@ def fuel(g, fuel_text):
     elif g == 3:
         for word in fuel_text:
             i_3+=1
-            if  word == "Repsol" :#and fuel_text[i_3-1] == "/":
+            if  word == "Repsol" :
                 word_1= fuel_text[i_3]
                 word_2 = fuel_text[i_3+5]
                 word_3 = fuel_text[i_3+10]
@@ -207,7 +207,6 @@ print(f"lista 1 :{list_1}\n")
 print(f"lista 2 :{list_2}\n")
 print(list_dates_2)
 print(len(list_2)%len(list_dates_2) == 0)
-#print(f"lista 2 :{soup}\n")
 #print(f"lista 3 :{list_3}\n")
 
 def repdates(list_dates, list_prices):
@@ -268,10 +267,14 @@ final_list_dates, final_list = zip(*ziped)
 final_list_dates = list(final_list_dates)
 final_list = list(final_list)
 
+final_list.pop(16)
+final_list_dates.pop(16)
+
 dict_price = {'Price': final_list, 
               'Date': final_list_dates}
 
 print(dict_price)
+#print(final_list.index(0.793))
 
 # Converter as datas de string para objetos datetime
 update_final_lst_date = [datetime.strptime(data, '%Y-%m-%d') for data in final_list_dates]
@@ -377,7 +380,7 @@ for element in final_list_dates:
     if element not in lista_all_dates:
         list_not_dates.append(element)
         num+=1
-print(num)
+print(num)              
 
 
 list_price_oil = []
@@ -451,7 +454,6 @@ lista_all_dates, list_price_oil = zipping(lista_all_dates, list_price_oil)
 lista_all_dates, list_price_oil = repdates(lista_all_dates, list_price_oil)
 
 
-
 # Plotar o gráfico
 fig, (ax1, ax2) = plt.subplots(2)
 fig.suptitle('Evolução do Preço ao Longo do Tempo')
@@ -463,7 +465,5 @@ plt.xlabel('Data')
 plt.ylabel('Preço')
 plt.show()
 
-#TO DO: - TIRAR O VALOR DE 0.79 DO PREÇO DA GASOLINA POIS FICOU O PREÇO DO GPL EM VEZ DA GASOLINA. 
 
-#pequena alteracao 
 f.close()
